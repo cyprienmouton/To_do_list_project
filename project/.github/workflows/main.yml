@@ -24,11 +24,16 @@ jobs:
 
     - name: Read image name
       id: image
-      run: echo "IMAGE_NAME=$(cat image.txt)" >> $GITHUB_ENV
+      run: |
+        echo "IMAGE_NAME=$(cat image.txt)" >> $GITHUB_ENV
+
+    - name: Debug - Show image name
+      run: echo "Image name: ${{ env.IMAGE_NAME }}"
 
     - name: Get tag from ref
       id: tag
-      run: echo "TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV
+      run: |
+        echo "TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
@@ -36,3 +41,4 @@ jobs:
         context: .
         push: true
         tags: ${{ env.IMAGE_NAME }}:${{ env.TAG }}
+
