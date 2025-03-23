@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  backend-auth:
+    build: ./backend-auth
+    container_name: backend-auth
+    env_file: .env
+    depends_on:
+      - db-auth
+    networks:
+      - auth_net
+
+  backend-tasks:
+    build: ./backend-tasks
+    container_name: backend-tasks
+    env_file: .env
+    depends_on:
+      - db-tasks
+    networks:
+      - tasks_net
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    env_file: .env
+    ports:
+      - "5000:5000"
+    depends_on:
+      - backend-auth
+      - backend-tasks
+    networks:
+      - auth_net
+      - tasks_net
+
+  db-auth:
+    image: postgres:13
+    container_name: db-auth
+    environment:
+      POSTGRES_DB: ${DB_AUTH_NAME}
+      POSTGRES_USER: ${DB_AUTH_USER}
+      POSTGRES_PASSWORD: ${DB_AUTH_PASSWORD}
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    networks:
+      - auth_net
+
+  db-tasks:
+    image: postgres:13
+    container_name: db-tasks
+    environment:
+      POSTGRES_DB: ${DB_TASKS_NAME}
+      POSTGRES_USER: ${DB_TASKS_USER}
+      POSTGRES_PASSWORD: ${DB_TASKS_PASSWORD}
+    volumes:
+      - tasks_db_data:/var/lib/postgresql/data
+    networks:
+      - tasks_net
+
+volumes:
+  auth_db_data:
+  tasks_db_data:
+
+networks:
+  auth_net:
+  tasks_net:
