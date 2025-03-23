@@ -8,6 +8,9 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
 
     steps:
     - name: Checkout code
@@ -22,11 +25,10 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Read image name from image.txt
-      run: |
-        echo "IMAGE_NAME=$(cat ${{ github.workspace }}/image.txt)" >> $GITHUB_ENV
+    - name: Read image name
+      run: echo "IMAGE_NAME=$(cat image.txt)" >> $GITHUB_ENV
 
-    - name: Show image name (debug)
+    - name: Debug - Show image name
       run: echo "🟢 Image name is: ${{ env.IMAGE_NAME }}"
 
     - name: Get tag from ref
